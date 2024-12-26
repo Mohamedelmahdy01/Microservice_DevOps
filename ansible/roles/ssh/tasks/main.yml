@@ -1,0 +1,12 @@
+---
+- name: Create the .ssh directory if it doesn't exist
+  file:
+    path: "/home/{{ ansible_user }}/.ssh"
+    state: directory
+    mode: "0700"
+
+- name: Add the ssh key
+  authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ lookup('file', ssh_public_key_file) }}"
+    state: present

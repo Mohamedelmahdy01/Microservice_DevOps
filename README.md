@@ -172,4 +172,4 @@ The project is developed and maintained by:
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT [License](./LICENSE).
