@@ -1,4 +1,3 @@
-
 # Microservices Deployment with Terraform, Docker, Ansible, and GitLab CI/CD
 
 This project demonstrates the deployment of a microservices application using Infrastructure as Code (Terraform), containerization (Docker), configuration management (Ansible), and automated CI/CD pipelines (GitLab CI/CD).
@@ -6,6 +5,7 @@ This project demonstrates the deployment of a microservices application using In
 ## Project Overview
 
 This project deploys a simple application composed of three microservices:
+
 -   `frontend`: A web application that interacts with the other services.
 -   `products`: A service that manages product information.
 -   `shopping-cart`: A service that manages the user's shopping cart.
@@ -23,148 +23,168 @@ Before you begin, ensure you have the following installed and configured:
 -   **AWS CLI**: [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 -   **An account on AWS**
 -   **An account on GitLab**
+-   **GitLab Project Link**: [Gitlab Project](your-gitlab-repo-link)
 
 ## Repository Structure
 
 ```plaintext
 Microservice_DevOps/
 ├── ansible/             # Ansible files for server setup
-│   ├── playbook.yml      # Main playbook
-│   ├── inventory         # Target hosts
-│   └── roles/            # Reusable roles
-│       └── ...
-├── application/          # Microservices code
-│   ├── frontend/         # Frontend service
-│   │   ├── Dockerfile    # Build frontend image
-│   │   ├── ...
-│   ├── products/         # Products service
-│   │   ├── Dockerfile    # Build products image
-│   │   ├── ...
-│   ├── shopping-cart/    # Shopping cart service
-│   │   ├── Dockerfile    # Build shopping cart image
-│   │   ├── ...
-│   ├── .gitignore        # Ignore unnecessary files
-│   ├── docker-compose.yaml  # Compose for app services
-├── terraform/            # Infrastructure configs
-│   ├── main.tf           # Main config
-│   ├── variables.tf      # Input variables
-│   ├── outputs.tf        # Output values
-│   └── modules/          # Modular configs
-│       ├── vpc/          # Network setup
+│   ├── ansible.cfg      # Ansible configuration file
+│   ├── inventory        # Target hosts
+│   ├── group_vars/      # Group variables
+│   │   └── all.yml      # Variables for all hosts
+│   ├── playbooks/       # Playbooks folder
+│   │   └── main.yml     # Main playbook
+│   └── roles/           # Reusable roles
+│       ├── docker/      # Docker setup tasks
+│       │   └── tasks/
+│       │       └── main.yml
+│       └── ssh/         # SSH setup
+│           ├── tasks/
+│           │   └── main.yml
+│           └── vars/
+│               └── main.yml
+├── application/         # Microservices code
+│   ├── frontend/        # Frontend service
+│   │   ├── Dockerfile   # Build frontend image
+│   │   ├── ...          # Frontend source code (HTML, CSS, JS)
+│   ├── products/        # Products service
+│   │   ├── Dockerfile   # Build products image
+│   │   ├── ...          # Products service source code (e.g., Node.js, Python)
+│   ├── shopping-cart/   # Shopping cart service
+│   │   ├── Dockerfile   # Build shopping cart image
+│   │   ├── ...          # Shopping cart service code (Node.js, Python)
+│   ├── .gitignore       # Ignore unnecessary files
+│   ├── docker-compose.yml # Local orchestration for app services
+├── terraform/           # Infrastructure configurations
+│   ├── main.tf          # Main Terraform config
+│   ├── variables.tf     # Input variables
+│   ├── outputs.tf       # Output values
+│   └── modules/         # Modular Terraform configurations
+│       ├── vpc/         # Network setup
 │       │   └── main.tf
-│       ├── compute/      # VMs or containers
+│       ├── compute/     # VM or container setup
 │       │   └── main.tf
-│       └── security/     # Security rules
-│            └── main.tf
-├── .gitlab-ci/           # CI/CD configs
-│   ├── build.yml         # Build pipeline
-│   ├── deploy.yml        # Deploy pipeline
-├── .gitlab-ci.yml        # Main pipeline file
-├── docker-compose.yml    # Local stack orchestration
-├── README.md             # Project documentation
-
+│       └── security/    # Security settings
+│           └── main.tf
+├── .gitlab-ci/          # CI/CD pipeline configuration
+│   ├── build.yml        # Build pipeline configuration
+│   ├── deploy.yml       # Deploy pipeline configuration
+├── .gitlab-ci.yml       # Main CI/CD pipeline file
+├── docker-compose.yml   # Local development stack orchestration
+├── README.md            # Project documentation
 ```
-
 
 ## Setup and Deployment
 
 ### 1. Configure AWS Credentials
 
-Configure your AWS CLI with your access key ID, secret access key, and default region:
+Set up your AWS CLI with the required credentials:
+
 ```bash
 aws configure
 ```
 
 ### 2. Set up Terraform
 
-1.  Navigate to the `terraform/` directory:
-    ```bash
-    cd terraform
-    ```
-2.  Review and adjust the variables in `variables.tf` (e.g., region, instance type, AMI ID, SSH key name).
-3.  Initialize Terraform:
-    ```bash
-    terraform init
-    ```
-4.  Create the infrastructure:
-    ```bash
-    terraform apply
-    ```
-    This will create your VPC, subnet, EC2 instance, and security groups.
-5.  Take note of the public IP output for the next steps, or get it from the AWS console.
+To provision infrastructure on AWS, use Terraform:
 
-### 3. Set up Ansible
+-   Initialize the Terraform working directory:
 
-1.  Navigate to the `ansible/` directory:
-    ```bash
-    cd ../ansible
-    ```
-2.  Add the `public IP address` of your deployed server to the `inventory` file.
-3.  Modify the `playbook.yml` file to ensure the correct SSH user and private key path are used.
-4.  Run the Ansible playbook to configure your server:
-    ```bash
-    ansible-playbook -i inventory playbook.yml
-    ```
+```bash
+terraform init
+```
 
-### 4. Configure GitLab CI/CD
+-   Create a plan to preview the infrastructure changes:
 
-1.  Add the following CI/CD variables to your GitLab project under Settings -> CI/CD -> Variables:
+```bash
+terraform plan
+```
+
+-   Apply the plan to provision the resources:
+
+```bash
+terraform apply
+```
+
+### 3. Ansible Configuration
+
+Ansible is used for configuring the infrastructure and deploying Docker containers:
+
+-   Set up the `inventory` file with the EC2 instance IP address.
+-   Modify the `ansible/playbooks/main.yml` to ensure correct SSH user and private key settings.
+-   Run the Ansible playbook to configure your server:
+
+```bash
+ansible-playbook -i inventory ansible/playbooks/main.yml
+```
+
+### 4. Docker Compose (Local Development)
+
+Use Docker Compose to run the services locally:
+
+```bash
+docker-compose up -d
+```
+
+### 5. GitLab CI/CD Pipeline
+
+Set up the GitLab CI/CD pipeline to automate build and deployment:
+
+1.  Add the following CI/CD variables in your GitLab repository:
     -   **`SSH_PRIVATE_KEY`**: Your private SSH key (base64 encoded).
     -   **`SERVER_IP`**: The public IP address of your server.
-    -   **`CI_REGISTRY_USER`**: The username to log into GitLab's container registry.
-    -   **`CI_REGISTRY_PASSWORD`**: The password to log into GitLab's container registry.
-2.  Ensure a GitLab Runner is available to execute your pipelines.
+    -   **`CI_REGISTRY_USER`**: GitLab container registry username.
+    -   **`CI_REGISTRY_PASSWORD`**: GitLab container registry password.
+   
+2.  Push the code to trigger the pipeline:
 
-### 5. Push Your Code and Trigger the Pipeline
-
-1.  Commit your code, including the `.gitlab-ci.yml` file, to your repository:
-    ```bash
-    git add .
-    git commit -m "Initial commit"
-    git push origin main
-    ```
-2.  This will trigger the pipeline to deploy the application.
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
 
 ### 6. Access the Application
 
-Once the CI/CD pipeline completes, your application should be running and accessible at:
+Once the pipeline completes, your application should be accessible at:
+
 ```
 http://<your-server-ip>:4000
 ```
 
 ## Application Architecture
 
-The application is structured as follows:
--   The `frontend` service acts as the user interface for the application, communicating with `products` and `shopping-cart` services.
--   The `products` service manages product information.
--   The `shopping-cart` service handles shopping cart functionality.
+-   The `frontend` service provides the user interface.
+-   The `products` service manages the product information.
+-   The `shopping-cart` service handles the user's shopping cart functionality.
 
-The services interact via HTTP requests.
+These services communicate over HTTP requests.
 
 ## Troubleshooting
 
--   **Network Issues**: Ensure security groups allow access to port `4000` for your IP.
--   **Docker Issues**: Verify Docker is running and your images are correctly built.
--   **Ansible Issues**: Check Ansible logs for errors in the server configuration.
--   **Terraform Issues**: Validate your Terraform configuration for any errors.
+-   **Network Issues**: Ensure security groups allow access to port `4000`.
+-   **Docker Issues**: Verify Docker is running and the images are built correctly.
+-   **Ansible Issues**: Check Ansible logs for errors.
+-   **Terraform Issues**: Validate Terraform configurations for errors.
 
----
+## Contributing
 
-## Contributing  
-We welcome contributions!  
-Feel free to:  
-- Submit pull requests.  
-- Open issues.  
-- Share suggestions for improvement.  
+We welcome contributions! Feel free to:
 
-## Contributors  
-The project is developed and maintained by:  
-- [EHABFAtHY1](https://github.com/EHABFAtHY1)  
-- [rawan-fawzy](https://github.com/rawan-fawzy)  
-- [MohammedZayed1](https://github.com/MohammedZayed1)  
-- [Mohamedelmahdy01](https://github.com/Mohamedelmahdy01)  
+- Submit pull requests.
+- Open issues.
+- Share suggestions for improvement.
 
----
+## Contributors
+
+This project is developed and maintained by:
+
+- [EHABFAtHY1](https://github.com/EHABFAtHY1)
+- [rawan-fawzy](https://github.com/rawan-fawzy)
+- [MohammedZayed1](https://github.com/MohammedZayed1)
+- [Mohamedelmahdy01](https://github.com/Mohamedelmahdy01)
 
 ## License
 
