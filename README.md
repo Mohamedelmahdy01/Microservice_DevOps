@@ -68,8 +68,6 @@ Microservice_DevOps/
 
 ## Setup and Deployment
 
-Follow these steps to set up and deploy your application:
-
 ### 1. Configure AWS Credentials
 
 Configure your AWS CLI with your access key ID, secret access key, and default region:
@@ -149,8 +147,6 @@ The services interact via HTTP requests.
 -   **Docker Issues**: Verify Docker is running and your images are correctly built.
 -   **Ansible Issues**: Check Ansible logs for errors in the server configuration.
 -   **Terraform Issues**: Validate your Terraform configuration for any errors.
-
-Here's an improved and concise "Contributing" section for your project:
 
 ---
 
