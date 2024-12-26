@@ -68,8 +68,6 @@ Microservice_DevOps/
 
 ## Setup and Deployment
 
-Follow these steps to set up and deploy your application:
-
 ### 1. Configure AWS Credentials
 
 Configure your AWS CLI with your access key ID, secret access key, and default region:
