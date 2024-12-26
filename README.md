@@ -150,8 +150,6 @@ The services interact via HTTP requests.
 -   **Ansible Issues**: Check Ansible logs for errors in the server configuration.
 -   **Terraform Issues**: Validate your Terraform configuration for any errors.
 
-Here's an improved and concise "Contributing" section for your project:
-
 ---
 
 ## Contributing  
