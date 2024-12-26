@@ -1,0 +1,59 @@
+stages:
+  - deploy
+
+deploy_frontend:
+  stage: deploy
+  image: docker:27.4.0-rc.2-cli
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY" | base64 -d)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "
+        docker pull $IMAGE_PREFIX/frontend:$COMMIT_SHA;
+        docker stop frontend || true;
+        docker rm frontend || true;
+        docker run -d -p 4000:4000 --name frontend -e SHOPPING_CART_URL='http://$SERVER_IP:4000' -e PRODUCTS_URL='http://$SERVER_IP:4000'  $IMAGE_PREFIX/frontend:$COMMIT_SHA
+      "
+  tags:
+    - docker
+
+deploy_products:
+  stage: deploy
+  image: docker:27.4.0-rc.2-cli
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY" | base64 -d)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "
+        docker pull $IMAGE_PREFIX/products:$COMMIT_SHA;
+        docker stop products || true;
+        docker rm products || true;
+        docker run -d -p 4001:4000 --name products $IMAGE_PREFIX/products:$COMMIT_SHA
+      "
+  tags:
+    - docker
+
+deploy_cart:
+  stage: deploy
+  image: docker:27.4.0-rc.2-cli
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY" | base64 -d)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no ubuntu@$SERVER_IP "
+        docker pull $IMAGE_PREFIX/shopping-cart:$COMMIT_SHA;
+        docker stop shopping-cart || true;
+        docker rm shopping-cart || true;
+        docker run -d -p 4002:4000 --name shopping-cart $IMAGE_PREFIX/shopping-cart:$COMMIT_SHA
+      "
+  tags:
+    - docker

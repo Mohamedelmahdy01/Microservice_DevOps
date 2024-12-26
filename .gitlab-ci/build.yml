@@ -1,0 +1,42 @@
+stages:
+  - build_main_image
+
+.image_build_push:
+  stage: build_main_image
+  image: docker:27.4.0-rc.2-cli
+  services:
+    - docker:27.4.0-rc.2-dind
+  variables:
+    IMAGE_VERSION: ""
+    DOCKER_FILE_PATH: ""
+  artifacts:
+    reports:
+      dotenv: environmental_variables.env
+
+build_frontend_service:
+  extends: .image_build_push
+  variables:
+    IMAGE_VERSION: $CI_REGISTRY_IMAGE:$COMMIT_SHA
+    DOCKER_FILE_PATH: application/frontend/
+  script:
+    - docker build -t $IMAGE_VERSION .
+    - docker push $IMAGE_VERSION
+
+build_products_service:
+  extends: .image_build_push
+  variables:
+    IMAGE_VERSION: $CI_REGISTRY_IMAGE:$COMMIT_SHA
+    DOCKER_FILE_PATH: application/products/
+  script:
+      - docker build -t $IMAGE_VERSION .
+      - docker push $IMAGE_VERSION
+
+
+build_cart_service:
+  extends: .image_build_push
+  variables:
+    IMAGE_VERSION: $CI_REGISTRY_IMAGE:$COMMIT_SHA
+    DOCKER_FILE_PATH: application/shopping-cart/
+  script:
+      - docker build -t $IMAGE_VERSION .
+      - docker push $IMAGE_VERSION

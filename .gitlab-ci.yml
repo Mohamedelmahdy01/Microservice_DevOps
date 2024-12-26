@@ -1,0 +1,24 @@
+include:
+  - local: .gitlab-ci/build.yml
+  - local: .gitlab-ci/deploy.yml
+
+variables:
+  IMAGE_PREFIX: $CI_REGISTRY_IMAGE
+  COMMIT_SHA: $CI_COMMIT_SHORT_SHA
+  DOCKER_IMAGE_VERSION: $COMMIT_SHA
+  FRONTEND_PORT: 4000
+  PRODUCTS_PORT: 4001
+  CART_PORT: 4002
+
+stages:
+  - build_main_image
+  - deploy_frontend
+  - deploy_products
+  - deploy_cart
+
+deploy_frontend:
+  stage: deploy_frontend
+deploy_products:
+  stage: deploy_products
+deploy_cart:
+  stage: deploy_cart

@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./application/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    networks:
+      - microservices-network
+    depends_on:
+      - products
+      - shopping-cart
+    environment:
+      - SHOPPING_CART_URL=http://shopping-cart:4000
+      - PRODUCTS_URL=http://products:4000
+
+  products:
+    build:
+      context: ./application/products
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    networks:
+      - microservices-network
+
+  shopping-cart:
+    build:
+      context: ./application/shopping-cart
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
