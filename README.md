@@ -51,10 +51,10 @@ Microservice_DevOps/
 │   │   ├── ...          # Frontend source code (HTML, CSS, JS)
 │   ├── products/        # Products service
 │   │   ├── Dockerfile   # Build products image
-│   │   ├── ...          # Products service source code (e.g., Node.js, Python)
+│   │   ├── ...          # Products service source code (e.g., Node.js)
 │   ├── shopping-cart/   # Shopping cart service
 │   │   ├── Dockerfile   # Build shopping cart image
-│   │   ├── ...          # Shopping cart service code (Node.js, Python)
+│   │   ├── ...          # Shopping cart service code (Node.js)
 │   ├── .gitignore       # Ignore unnecessary files
 │   ├── docker-compose.yml # Local orchestration for app services
 ├── terraform/           # Infrastructure configurations
