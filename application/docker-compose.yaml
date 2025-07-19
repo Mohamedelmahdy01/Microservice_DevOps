@@ -4,7 +4,7 @@ services:
     image: ${DC_IMAGE_NAME}:${DC_IMAGE_VERSION}
     ports:
       - ${DC_APP_PORT}:${DC_EXPORT_PORT}
-    #assign to a network or multiple networks
+
     networks:
       - microservice_network
 
